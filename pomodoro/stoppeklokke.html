@@ -25,7 +25,8 @@
         updateView();
         function updateView() {
             document.getElementById('app').innerHTML = /*HTML*/`
-
+                <button onclick=changeTime(1)>↑</button>
+                <button onclick=changeTime(-1)>↓</button>
                 <div>${Show()}</div>
                 <button onclick=start()>Start</button>
                 <button onclick=pause()>Pause</button>
@@ -46,6 +47,13 @@
             return timer;
         }
 
+        
+        //kontrollere
+        function changeTime(number){
+            seconds += (300*number);
+            updateView();
+        }
+
         function start(){
             clearInterval(countdownInterval);
             countdownInterval = setInterval(updateView, 1000)
@@ -55,8 +63,7 @@
             seconds--;
             if (seconds < 0) {
                 clearInterval(countdownInterval)
-            }
-            
+            }            
         }
 
         function pause(){
