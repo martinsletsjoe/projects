@@ -20,6 +20,7 @@
         var startingTime = 3600;
         var seconds = startingTime;
         var countdownInterval;
+        var isRunning = false;
 
 
         updateView();
@@ -29,9 +30,8 @@
                 <button onclick=changeTime(-1)>↓</button>
                 <div>${Show()}</div>
                 <button onclick=start()>Start</button>
-                <button onclick=pause()>Pause</button>
+                <button onclick=stop()>Stop</button>
                 <button onclick=reset()>Reset</button>
-                ${countDown() ? '': ''} 
                 `;
             console.log(seconds);
         }
@@ -44,29 +44,35 @@
             var formattedSeconds = remainingSeconds.toString().padStart(2,'0');
 
             var timer = formattedMinutes + ':' + formattedSeconds;
+            checkIfFinished()
             return timer;
         }
 
         
         //kontrollere
         function changeTime(number){
+            if(seconds <= 0)return;
             seconds += (300*number);
             updateView();
+        }  
+        
+        function countDown(){
+            seconds--;
+            updateView()
+        }
+
+        function checkIfFinished() {
+            if (seconds < 0) {
+                clearInterval(countdownInterval)
+            }
         }
 
         function start(){
             clearInterval(countdownInterval);
-            countdownInterval = setInterval(updateView, 1000)
-        }
+            countdownInterval = setInterval(countDown, 1000)
+        } 
 
-        function countDown() {
-            seconds--;
-            if (seconds < 0) {
-                clearInterval(countdownInterval)
-            }            
-        }
-
-        function pause(){
+        function stop(){
             clearInterval(countdownInterval)
         }
 
