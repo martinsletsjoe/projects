@@ -17,9 +17,13 @@
     <div id="app"></div>
     <script>
         // model
-        var startingTime = 3600;
-        var seconds = startingTime;
-        var countdownInterval;
+        const model = {
+            timer: [
+                {startingTime: 3600},
+                {seconds: startingTime},
+                {countdownInterval},
+            ]
+        }
 
         updateView();
         function updateView() {
