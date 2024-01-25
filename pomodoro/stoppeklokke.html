@@ -18,17 +18,20 @@
     <script>
         // model
         const model = {
-            timer: [
-                {
-                    startingTime: 3600,
-                    seconds: 0,
-                    countdownInterval: null},
-            ]
+            clock: [
+                { startingTime: 3600},
+                { seconds: null},
+                { countdownInterval: null},            
+            ],
+            log: [],
         }
+        // var startingTime = 3600;
+        // var seconds = startingTime;
+        // var countdownInterval;
+
 
         updateView();
         function updateView() {
-            model.timer.seconds = model.timer.startingTime
             document.getElementById('app').innerHTML = /*HTML*/`
                 <button onclick=changeTime(1)>↑</button>
                 <button onclick=changeTime(-1)>↓</button>
@@ -36,13 +39,32 @@
                 <button onclick=start()>Start</button>
                 <button onclick=stop()>Stop</button>
                 <button onclick=reset()>Reset</button>
+                <ul>
+                    <li>${model.log[0]}
+                        </li>
+                </ul>
                 `;
-            console.log(model.timer[0].seconds);
+            // console.log(model.clock[1].seconds);
+        }
+
+        function PomodoroLog(){
+            let myDate = new Date();
+            let todayDate = {day: '2-digit', month: '2-digit', year: 'numeric'};
+            let formattedDate = myDate.toLocaleDateString("nb-NO",todayDate);
+            let formattedTime = `${String(myDate.getHours()).padStart(2, '0')}:
+            ${String(myDate.getMinutes()).padStart(2, '0')}`;
+            
+            let loggedTime = formattedDate + " kl. " + formattedTime
+
+
+            // model.log.push(loggedTime)
         }
 
         function Show(){
-            var minutes = Math.floor(model.timer[0].seconds / 60);
-            var remainingSeconds = model.timer[0].seconds % 60;
+            if(!model.clock[1].seconds){model.clock[1].seconds = model.clock[0].startingTime}
+            var seconds = model.clock[1].seconds;
+            var minutes = Math.floor(seconds / 60);
+            var remainingSeconds = seconds % 60;
 
             var formattedMinutes = minutes.toString().padStart(2,'0');
             var formattedSeconds = remainingSeconds.toString().padStart(2,'0');
@@ -55,35 +77,41 @@
         
         //kontrollere
         function changeTime(number){
-            var seconds = model.timer.seconds;
-            if(seconds <= 0)return;
-            seconds += (300*number);
+            let startingTime = model.clock[0].startingTime
+            startingTime += (300*number);
+            
+            if(startingTime < 0) {startingTime = 0};
+
+            model.clock[0].startingTime = startingTime
             updateView();
-        }  
+        }
+
+        function start(){
+            clearInterval(model.clock[2].countdownInterval);
+            model.clock[2].countdownInterval = setInterval(countDown, 1000)
+        }   
         
         function countDown(){
-            model.timer.seconds--;
+            // console.log(model.clock[1].seconds)
+            model.clock[1].seconds--;            
+            // console.log(model.clock[1].seconds)
             updateView()
         }
 
         function checkIfFinished() {
-            if (model.timer.seconds < 0) {
-                clearInterval(model.timer.countdownInterval)
+            var seconds = model.clock[1].seconds;
+            if (seconds < 0) {
+                clearInterval(model.clock[2].countdownInterval)
             }
         }
 
-        function start(){
-            clearInterval(model.timer.countdownInterval);
-            model.timer.countdownInterval = setInterval(countDown, 1000)
-        } 
-
         function stop(){
-            clearInterval(model.timer.countdownInterval)
+            clearInterval(model.clock[2].countdownInterval)
         }
 
         function reset(){
-            clearInterval(model.timer.countdownInterval)
-            model.timer.seconds = model.timer.startingTime;
+            clearInterval(model.clock[2].countdownInterval)
+            model.clock[1].seconds = model.clock[0].startingTime;
             updateView();
         }
 
