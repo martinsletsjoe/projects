@@ -19,15 +19,13 @@
         // model
         const model = {
             clock: [
-                { startingTime: 3600},
+                { InitialTime: 5},
                 { seconds: null},
                 { countdownInterval: null},            
             ],
-            log: [],
+            log: [
+            ],
         }
-        // var startingTime = 3600;
-        // var seconds = startingTime;
-        // var countdownInterval;
 
 
         updateView();
@@ -41,10 +39,10 @@
                 <button onclick=reset()>Reset</button>
                 <ul>
                     <li>${model.log[0]}
+                    
                         </li>
                 </ul>
                 `;
-            // console.log(model.clock[1].seconds);
         }
 
         function PomodoroLog(){
@@ -57,32 +55,47 @@
             let loggedTime = formattedDate + " kl. " + formattedTime
 
 
-            // model.log.push(loggedTime)
+            model.log.push(loggedTime)
         }
 
         function Show(){
-            if(!model.clock[1].seconds){model.clock[1].seconds = model.clock[0].startingTime}
-            var seconds = model.clock[1].seconds;
-            var minutes = Math.floor(seconds / 60);
-            var remainingSeconds = seconds % 60;
+            if(model.clock[1].seconds === null){setTime()}
+            let seconds = model.clock[1].seconds;
+            let minutes = Math.floor(seconds / 60);
+            let remainingSeconds = seconds % 60;
 
-            var formattedMinutes = minutes.toString().padStart(2,'0');
-            var formattedSeconds = remainingSeconds.toString().padStart(2,'0');
+            let formattedMinutes = minutes.toString().padStart(2,'0');
+            let formattedSeconds = remainingSeconds.toString().padStart(2,'0');
 
-            var timer = formattedMinutes + ':' + formattedSeconds;
+            let timer = formattedMinutes + ':' + formattedSeconds;
             checkIfFinished()
             return timer;
         }
 
+        // function createLogItemsHtml(){
+        //     return /*HTML*/`
+        //         <li>
+                    
+        //         </li>
+
+        //     `;
+        // }
+
         
         //kontrollere
+        function setTime(){
+            model.clock[1].seconds = model.clock[0].InitialTime
+            updateView()
+        }
+
         function changeTime(number){
-            let startingTime = model.clock[0].startingTime
+            let startingTime = model.clock[0].InitialTime
             startingTime += (300*number);
             
             if(startingTime < 0) {startingTime = 0};
 
-            model.clock[0].startingTime = startingTime
+            model.clock[0].InitialTime = startingTime
+            setTime()
             updateView();
         }
 
@@ -92,16 +105,15 @@
         }   
         
         function countDown(){
-            // console.log(model.clock[1].seconds)
             model.clock[1].seconds--;            
-            // console.log(model.clock[1].seconds)
             updateView()
         }
 
         function checkIfFinished() {
             var seconds = model.clock[1].seconds;
-            if (seconds < 0) {
+            if (seconds <= 0) {
                 clearInterval(model.clock[2].countdownInterval)
+                model.log[0] += "hei";
             }
         }
 
@@ -111,7 +123,7 @@
 
         function reset(){
             clearInterval(model.clock[2].countdownInterval)
-            model.clock[1].seconds = model.clock[0].startingTime;
+            model.clock[1].seconds = model.clock[0].InitialTime;
             updateView();
         }
 
