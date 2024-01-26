@@ -19,9 +19,9 @@
         // model
         const model = {
             clock: [
-                { InitialTime: 5},
-                { seconds: null},
-                { countdownInterval: null},            
+                { InitialTime: 5 },
+                { seconds: null },
+                { countdownInterval: null },
             ],
             log: [
             ],
@@ -38,34 +38,34 @@
                 <button onclick=stop()>Stop</button>
                 <button onclick=reset()>Reset</button>
                 <ul>
-                    <li>${model.log[0]}
+                    ${model.log[0] || ''}
                     
-                        </li>
+                        
                 </ul>
                 `;
         }
 
-        function PomodoroLog(){
+        function PomodoroLog() {
             let myDate = new Date();
-            let todayDate = {day: '2-digit', month: '2-digit', year: 'numeric'};
-            let formattedDate = myDate.toLocaleDateString("nb-NO",todayDate);
+            let todayDate = { day: '2-digit', month: '2-digit', year: 'numeric' };
+            let formattedDate = myDate.toLocaleDateString("nb-NO", todayDate);
             let formattedTime = `${String(myDate.getHours()).padStart(2, '0')}:
             ${String(myDate.getMinutes()).padStart(2, '0')}`;
-            
-            let loggedTime = formattedDate + " kl. " + formattedTime
+
+            let loggedTime = `<li>${formattedDate + " kl. " + formattedTime}</li>`;
 
 
             model.log.push(loggedTime)
         }
 
-        function Show(){
-            if(model.clock[1].seconds === null){setTime()}
+        function Show() {
+            if (model.clock[1].seconds === null) { setTime() }
             let seconds = model.clock[1].seconds;
             let minutes = Math.floor(seconds / 60);
             let remainingSeconds = seconds % 60;
 
-            let formattedMinutes = minutes.toString().padStart(2,'0');
-            let formattedSeconds = remainingSeconds.toString().padStart(2,'0');
+            let formattedMinutes = minutes.toString().padStart(2, '0');
+            let formattedSeconds = remainingSeconds.toString().padStart(2, '0');
 
             let timer = formattedMinutes + ':' + formattedSeconds;
             checkIfFinished()
@@ -75,37 +75,39 @@
         // function createLogItemsHtml(){
         //     return /*HTML*/`
         //         <li>
-                    
+
         //         </li>
 
         //     `;
         // }
 
-        
+
         //kontrollere
-        function setTime(){
+        function setTime() {
             model.clock[1].seconds = model.clock[0].InitialTime
             updateView()
         }
 
-        function changeTime(number){
+        function changeTime(number) {
             let startingTime = model.clock[0].InitialTime
-            startingTime += (300*number);
-            
-            if(startingTime < 0) {startingTime = 0};
+            startingTime += (300 * number);
+
+            if (startingTime < 0) { startingTime = 0 };
 
             model.clock[0].InitialTime = startingTime
             setTime()
             updateView();
         }
 
-        function start(){
+        function start() {
+            setTime()
             clearInterval(model.clock[2].countdownInterval);
-            model.clock[2].countdownInterval = setInterval(countDown, 1000)
-        }   
-        
-        function countDown(){
-            model.clock[1].seconds--;            
+            model.clock[2].countdownInterval = setInterval(countDown, 1000)            
+            PomodoroLog()
+        }
+
+        function countDown() {
+            model.clock[1].seconds--;
             updateView()
         }
 
@@ -113,15 +115,18 @@
             var seconds = model.clock[1].seconds;
             if (seconds <= 0) {
                 clearInterval(model.clock[2].countdownInterval)
-                model.log[0] += "hei";
-            }
+                const now = new Date();
+                const hours = now.getHours();
+                const minutes = now.getMinutes();
+                const seconds = now.getSeconds();
+                model.log[0] += ` finished   ${hours}:${minutes}:${seconds}`;}
         }
 
-        function stop(){
+        function stop() {
             clearInterval(model.clock[2].countdownInterval)
         }
 
-        function reset(){
+        function reset() {
             clearInterval(model.clock[2].countdownInterval)
             model.clock[1].seconds = model.clock[0].InitialTime;
             updateView();
