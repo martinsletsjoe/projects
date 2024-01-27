@@ -38,24 +38,16 @@
                 <button onclick=stop()>Stop</button>
                 <button onclick=reset()>Reset</button>
                 <ul>
-                    ${model.log[0] || ''}
-                    
+                    <tr>
+                        ${model.log[0] || ''}
+                    </tr>
                         
                 </ul>
                 `;
         }
 
         function PomodoroLog() {
-            let myDate = new Date();
-            let todayDate = { day: '2-digit', month: '2-digit', year: 'numeric' };
-            let formattedDate = myDate.toLocaleDateString("nb-NO", todayDate);
-            let formattedTime = `${String(myDate.getHours()).padStart(2, '0')}:
-            ${String(myDate.getMinutes()).padStart(2, '0')}`;
 
-            let loggedTime = `<li>${formattedDate + " kl. " + formattedTime}</li>`;
-
-
-            model.log.push(loggedTime)
         }
 
         function Show() {
@@ -71,16 +63,6 @@
             checkIfFinished()
             return timer;
         }
-
-        // function createLogItemsHtml(){
-        //     return /*HTML*/`
-        //         <li>
-
-        //         </li>
-
-        //     `;
-        // }
-
 
         //kontrollere
         function setTime() {
@@ -102,8 +84,16 @@
         function start() {
             setTime()
             clearInterval(model.clock[2].countdownInterval);
-            model.clock[2].countdownInterval = setInterval(countDown, 1000)            
-            PomodoroLog()
+            model.clock[2].countdownInterval = setInterval(countDown, 1000)
+
+            let myDate = new Date();
+            let todayDate = { day: '2-digit', month: '2-digit', year: 'numeric' };
+            let formattedDate = myDate.toLocaleDateString("nb-NO", todayDate);
+            let formattedTime = `${String(myDate.getHours()).padStart(2, '0')}:
+            ${String(myDate.getMinutes()).padStart(2, '0')}`;
+
+            let loggedTime = formattedDate + formattedTime;
+            checkIfFinished(loggedTime);
         }
 
         function countDown() {
@@ -111,7 +101,7 @@
             updateView()
         }
 
-        function checkIfFinished() {
+        function checkIfFinished(started) {
             var seconds = model.clock[1].seconds;
             if (seconds <= 0) {
                 clearInterval(model.clock[2].countdownInterval)
@@ -119,7 +109,8 @@
                 const hours = now.getHours();
                 const minutes = now.getMinutes();
                 const seconds = now.getSeconds();
-                model.log[0] += ` finished   ${hours}:${minutes}:${seconds}`;}
+                model.log[0] += `${started} finished   ${hours}:${minutes}:${seconds}`;
+            }
         }
 
         function stop() {
