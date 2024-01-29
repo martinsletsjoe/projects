@@ -19,13 +19,15 @@
         // model
         const model = {
             clock: [
-                { initialTime: 5 },
+                { initialTimerValue: 5 },
                 { seconds: null },
-                { countdownInterval: null },
+                { timerInterval: null },
             ],
             log: [
-                {start: null,
-                end: null,}
+                {
+                    startTime: null,
+                    endTime: null,
+                }
             ],
         }
 
@@ -33,28 +35,28 @@
         updateView();
         function updateView() {
             document.getElementById('app').innerHTML = /*HTML*/`
-                <button onclick=changeTime(1)>↑</button>
-                <button onclick=changeTime(-1)>↓</button>
-                <div>${Show()}</div>
-                <button onclick=start()>Start</button>
-                <button onclick=stop()>Stop</button>
-                <button onclick=reset()>Reset</button>
-                <ul>
+                <button onclick=adjustTimer(1)>↑</button>
+                <button onclick=adjustTimer(-1)>↓</button>
+                <div>${formatTime()}</div>
+                <button onclick=startTimer()>Start</button>
+                <button onclick=stopTimer()>Stop</button>
+                <button onclick=resetTimer()>Reset</button>
+                <table>
                     <tr>
-                        ${model.log.start || ''}
-                        ${model.log.end || ''}
-
+                        <th>Start Time</th>
+                        <th>End Time</th>
                     </tr>
-                        
-                </ul>
+                    <tr>
+                        <td>${model.log.startTime || 'N/A'}</td>
+                        <td>${model.log.endTime || 'N/A'}</td>
+                    </tr>
+                </table>
+
                 `;
         }
 
-        function PomodoroLog() {
 
-        }
-
-        function Show() {
+        function formatTime() {
             if (model.clock[1].seconds === null) { setTime() }
             let seconds = model.clock[1].seconds;
             let minutes = Math.floor(seconds / 60);
@@ -64,73 +66,69 @@
             let formattedSeconds = remainingSeconds.toString().padStart(2, '0');
 
             let timer = formattedMinutes + ':' + formattedSeconds;
-            checkIfFinished()
+            checkTimerCompletion()
             return timer;
         }
 
         //kontrollere
         function setTime() {
-            model.clock[1].seconds = model.clock[0].initialTime
+            model.clock[1].seconds = model.clock[0].initialTimerValue
             updateView()
         }
 
-        function changeTime(number) {
-            let startingTime = model.clock[0].initialTime
-            startingTime += (300 * number);
+        function adjustTimer(timeChangeAmount) {
+            let startingTime = model.clock[0].initialTimerValue
+            startingTime += (300 * timeChangeAmount);
 
             if (startingTime < 0) { startingTime = 0 };
 
-            model.clock[0].initialTime = startingTime
+            model.clock[0].initialTimerValue = startingTime
             setTime()
             updateView();
         }
 
-        function start() {
+        function startTimer() {
             setTime()
-            clearInterval(model.clock[2].countdownInterval);
-            model.clock[2].countdownInterval = setInterval(countDown, 1000)
+            clearInterval(model.clock[2].timerInterval);
+            model.clock[2].timerInterval = setInterval(updateTimer, 1000)
 
-            let myDate = new Date();
-            let todayDate = { day: '2-digit', month: '2-digit', year: 'numeric' };
-            let formattedDate = myDate.toLocaleDateString("nb-NO", todayDate);
-            let formattedTime = `${String(myDate.getHours()).padStart(2, '0')}:
-            ${String(myDate.getMinutes()).padStart(2, '0')}`;
-
-            let loggedTime = formattedDate + formattedTime;
-            checkIfFinished(loggedTime);
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+            // model.log.start = started;
+            model.log.startTime = hours + ':' + minutes + ':' + seconds;
+            checkTimerCompletion(model.log.startTime);
         }
 
-        function countDown() {
+        function updateTimer() {
             model.clock[1].seconds--;
             updateView()
         }
 
-        function checkIfFinished(started) {
+        function checkTimerCompletion(started) {
             var seconds = model.clock[1].seconds;
             if (seconds <= 0) {
-                clearInterval(model.clock[2].countdownInterval)
+                clearInterval(model.clock[2].timerInterval)
                 const now = new Date();
                 const hours = now.getHours();
                 const minutes = now.getMinutes();
                 const seconds = now.getSeconds();
                 // model.log.start = started;
-                model.log.end = hours+':'+minutes+':'+seconds;
+                model.log.endTime = hours + ':' + minutes + ':' + seconds;
             }
         }
 
-        function stop() {
-            clearInterval(model.clock[2].countdownInterval)
+        function stopTimer() {
+            clearInterval(model.clock[2].timerInterval)
         }
 
-        function reset() {
-            clearInterval(model.clock[2].countdownInterval)
-            model.clock[1].seconds = model.clock[0].initialTime;
+        function resetTimer() {
+            clearInterval(model.clock[2].timerInterval)
+            model.clock[1].seconds = model.clock[0].initialTimerValue;
             updateView();
         }
 
-
-
     </script>
 </body>
-
 </html>
